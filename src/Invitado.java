@@ -35,24 +35,25 @@ public class Invitado extends Agent {
 
                 fiesta = true;
                 System.out.println(myAgent.getLocalName() + "[WakerBehaviour] : He llegado a la fiesta");
-                myAgent.addBehaviour(new SaludoBehaviour());
+                myAgent.addBehaviour(new SaludarBehaviour());
                 myAgent.addBehaviour(new BienvenidaBehaviour());
 
             }
 
         });
 
-        addBehaviour(new LLEnaBehaviour());
+        addBehaviour(new LlenaBehaviour());
 
     }
 
 
 
 
-    @Override
+
+	@Override
     protected void takeDown() {
         System.out.println(getLocalName()+" se marcho de la fiesta");
-        removeInvitado();
+        this.doDelete();
     }
 
     //HACER UNO QUE HAGA QUE TODOS ESCUCHEN AL ANFITRION CUANDO LA SALA ESTE LLENA
@@ -101,12 +102,12 @@ public class Invitado extends Agent {
         public void action() {
 
             MessageTemplate mt = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.INFORM),
-                    MessageTemplate.MatchContent("hello"));
+                    								MessageTemplate.MatchContent("hello"));
             ACLMessage msg = myAgent.receive(mt);
+           
             if (msg != null && !msg.getSender().equals(myAgent.getAID())) {
                 ACLMessage reply = msg.createReply();
-                System.out.println(
-                        myAgent.getLocalName() + " [WelcomeBehaviour] : Hola " + msg.getSender().getLocalName());
+                System.out.println(myAgent.getLocalName() + " [WelcomeBehaviour] : Hola " + msg.getSender().getLocalName());
                 reply.setContent("Hola!!");
                 myAgent.send(reply);
             }
@@ -117,25 +118,6 @@ public class Invitado extends Agent {
         public boolean done() {
             return false;
         }
-
-    }
-
-        @Override
-        public boolean done() {
-            return false;
-        }
-
-    }
-
-
-            }
-        }
-
-    }
-
-
-
-
      //REGISTRAR LA ENTRADA Y SALIDA DE LAS PERSONAS EN LAS PAGINAS AMARILLAS
 
 
