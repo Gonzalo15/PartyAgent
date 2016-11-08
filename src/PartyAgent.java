@@ -43,7 +43,8 @@ public class PartyAgent extends Agent {
 
         });
 
-        addBehaviour(new LlenaBehaviour());
+        //addBehaviour(new LlenaBehaviour());
+        
 
     }
 
