@@ -1,14 +1,20 @@
+import java.util.Random;
+
 import jade.core.Agent;
+import jade.core.behaviours.TickerBehaviour;
+import jade.domain.FIPAException;
 
 public class Camarero extends Agent {
 	
 	 protected void setup() {
+		 int pasos=0;
          registerCamarero(getLocalName());
 
          Random rnd = new Random();
          int wakeTime = (int) (rnd.nextDouble()); //AJUSTAR BIEN EL RANDOM
          blockingReceive(wakeTime);
-         addBehaviour(new TickerBehaviour(myAgent, 3000){) {
+
+         addBehaviour(new TickerBehaviour(myAgent, 3000) {
              @Override
              protected void onTick() {
                  System.out.println("[tickerbehaviour] "+getLocalName() );
@@ -37,12 +43,8 @@ public class Camarero extends Agent {
 
              }
 
-
-             }
-
          });
 
-         addBehaviour(new LLEnaBehaviour());
 
         void EnviarMensaje(String s){
             ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
@@ -57,16 +59,13 @@ public class Camarero extends Agent {
 
             myAgent.send(msg);
 
-     }
+        }
 	 } 
-	 
-	 protected void action(){
-		 
-	 }
 
     @Override
     protected void takeDown() {
         System.out.println(getLocalName()+" se marcho de la fiesta");
         this.doDelete();
     }
+
 }
