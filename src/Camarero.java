@@ -8,7 +8,7 @@ public class Camarero extends Agent {
 	
 	 protected void setup() {
 		 int pasos=0;
-         registerCamarero(getLocalName());
+         //registerCamarero(getLocalName());
 
          Random rnd = new Random();
          int wakeTime = (int) (rnd.nextDouble()); //AJUSTAR BIEN EL RANDOM
