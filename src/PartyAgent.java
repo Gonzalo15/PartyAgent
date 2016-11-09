@@ -16,8 +16,8 @@ import jade.lang.acl.MessageTemplate;
 @SuppressWarnings("serial")
 public class PartyAgent extends Agent {
 
-    private boolean fiesta = false;
-    private boolean lleno = false;
+    public boolean fiesta = false;
+    public boolean lleno = false;
     private String rol;
     private AID partyHost;
 
@@ -28,7 +28,7 @@ public class PartyAgent extends Agent {
         registerAgent();
 
         Random rnd = new Random();
-        int wakeTime = (int) (rnd.nextDouble()); //AJUSTAR BIEN EL RANDOM
+        int wakeTime = (int) (rnd.nextDouble()* 99 + 1); //Random de 1 a 100 ( el 99 es el numero de elementeos y el 1 el primer numero
         blockingReceive(wakeTime);
         addBehaviour(new WakerBehaviour(this, wakeTime) {
             @Override
@@ -47,10 +47,6 @@ public class PartyAgent extends Agent {
         
 
     }
-
-
-
-
 
 	private void registerAgent() {
 		
@@ -77,10 +73,6 @@ public class PartyAgent extends Agent {
 		
 	}
 
-
-
-
-
 	@Override
     protected void takeDown() {
 		Random rnd = new Random();
@@ -93,9 +85,28 @@ public class PartyAgent extends Agent {
 		}
     }
 
+	
+	
+	
     //HACER UNO QUE HAGA QUE TODOS ESCUCHEN AL ANFITRION CUANDO LA SALA ESTE LLENA
     //UN BEHAVIOUR PARA DEJAR LA FIESTA
 
+	private class LlenaBehaviour extends SimpleBehaviour{
+
+		@Override
+		public void action() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public boolean done() {
+			// TODO Auto-generated method stub
+			return false;
+		}
+		
+	}
+	
     private class SaludarBehaviour extends OneShotBehaviour {
     	
     	private AID[] Invitados;
