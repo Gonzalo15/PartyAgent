@@ -18,7 +18,7 @@ import jade.lang.acl.MessageTemplate;
 @SuppressWarnings("serial")
 public class PartyAgent extends Agent {
 
-    private String rol;
+    private static String rol;
     private boolean comienzo= false;
     private AID partyHost;
 
@@ -122,12 +122,14 @@ public class PartyAgent extends Agent {
 	          	
 	          	if (ListaInvitados.numInvitados()== lista.length && rol.equals("Host")){
 	          		
-	          		ACLMessage msg= new ACLMessage(ACLMessage.REQUEST);
+	          		ACLMessage msgC= new ACLMessage(ACLMessage.REQUEST);
+	          		ACLMessage msgG= new ACLMessage(ACLMessage.INFORM);
+	          		
 	          		for (int i=0; i<listaC.length; i++){
 	          			aux=listaC[i].getName();
-	          			msg.addReceiver(aux);
+	          			msgC.addReceiver(aux);
 	          		}      		
-	          		msg.setContent("Camareros!!!");
+	          		msgC.setContent("Camareros!!!");
 	          		comienzo=true;
 	          	}
 	        }
