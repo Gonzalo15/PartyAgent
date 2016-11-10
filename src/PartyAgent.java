@@ -27,42 +27,40 @@ public class PartyAgent extends Agent {
     protected void setup() {
 
     	registerList();
-        
-
-        Random rnd = new Random();
-        int wakeTime = (int) (rnd.nextDouble()* 99 + 1); //Random de 1 a 100 ( el 99 es el numero de elementeos y el 1 el primer numero
-        blockingReceive(wakeTime);
-        addBehaviour(new WakerBehaviour(this, wakeTime) {
-            @Override
-            protected void onWake() {
-            	
-                System.out.println(myAgent.getLocalName() + "[WakerBehaviour] : He llegado a la fiesta");
-                myAgent.addBehaviour(new SaludarBehaviour());
-                myAgent.addBehaviour(new BienvenidaBehaviour());
-            }
-
-        });
-
-        if(rol.equals("Host")){
-        	addBehaviour(new LlenaBehaviour());
-        }
-
+    	
+    	if(this.getAID().toString().contains("Host")){
+    		registerAgent("Host");
+    		addBehaviour(new LlenaBehaviour());
+    	}
+    	else{
+    		Random rnd = new Random();
+    		int wakeTime = (int) (rnd.nextDouble()* 99 + 1); //Random de 1 a 100 ( el 99 es el numero de elementeos y el 1 el primer numero
+    		blockingReceive(wakeTime);
+    		addBehaviour(new WakerBehaviour(this, wakeTime) {
+    			@Override
+    			protected void onWake() {
+    				System.out.println(myAgent.getLocalName() + "[WakerBehaviour] : He llegado a la fiesta");
+    				myAgent.addBehaviour(new SaludarBehaviour());
+    				myAgent.addBehaviour(new BienvenidaBehaviour());
+    			}
+    		});
+    	}
+        	
     }
+
+
+	public String getRol() {
+		return rol;
+	}
 
 	private void registerList() {
 		ListaInvitados.registrar(getAID());
 		
 	}
 
-	private void registerAgent() {
+	private void registerAgent(String rol) {
 		
-		if(this.getAID().toString().contains("Host")){
-			rol="Host";
-		}
-		else{
-			rol="Guest";
-		}
-		
+		this.rol=rol;
 		DFAgentDescription dfd = new DFAgentDescription();
 		dfd.setName(getAID());
 		ServiceDescription sd = new ServiceDescription();
@@ -154,7 +152,7 @@ public class PartyAgent extends Agent {
     	
         @Override
         public void action() {
-        	registerAgent();
+        	registerAgent("Guest");
         	System.out.println(myAgent.getLocalName() + "[OneShootBehaviour] : Hola a tod@s");         
 
             DFAgentDescription template = new DFAgentDescription();
