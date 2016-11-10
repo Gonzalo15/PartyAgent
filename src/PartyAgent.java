@@ -49,7 +49,7 @@ public class PartyAgent extends Agent {
     }
 
 
-	public String getRol() {
+	public static String getRol() {
 		return rol;
 	}
 
