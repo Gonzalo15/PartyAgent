@@ -1,14 +1,14 @@
-import java.util.Random;
-
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.TickerBehaviour;
 import jade.domain.DFService;
-import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
+import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
+
+import java.util.Random;
 
 @SuppressWarnings("serial")
 public class Camarero extends Agent {
@@ -25,26 +25,16 @@ public class Camarero extends Agent {
 		System.out.println("Agente "+getLocalName()+": es hora de trabajar");
 		ACLMessage reply = new ACLMessage(ACLMessage.INFORM);
 		reply.addReceiver(msg.getSender());
-		reply.setContent("Finalizado");
+		reply.setContent("a sus ordenes");
 		send(reply);
 		
 		addBehaviour(new TickerBehaviour(this, 3000) {
 			@Override
 			protected void onTick() {
-				int pasos = 0;
 				System.out.println("[tickerbehaviour] " + getLocalName());
 
-				switch (pasos) {
-
-				case 1:
 					EnviarMensaje("Le apetece algo de comer");
-					break;
-
-				case 2:
 					EnviarMensaje("Le apetece algo de beber");
-					break;
-				}
-				pasos++;
 			}
 
 			private AID getAID() {
@@ -97,7 +87,7 @@ public class Camarero extends Agent {
 
 	@Override
 	protected void takeDown() {
-		System.out.println(getLocalName() + " se marchó de la fiesta");
+		System.out.println(getLocalName() + " se marchï¿½ de la fiesta");
 		this.doDelete();
 	}
 
