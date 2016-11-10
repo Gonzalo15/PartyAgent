@@ -4,12 +4,14 @@ import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.OneShotBehaviour;
+import jade.core.behaviours.SequentialBehaviour;
 import jade.core.behaviours.SimpleBehaviour;
 import jade.core.behaviours.WakerBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
+import jade.gui.DFAgentDscDlg;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
@@ -17,7 +19,6 @@ import jade.lang.acl.MessageTemplate;
 public class PartyAgent extends Agent {
 
     public boolean fiesta = false;
-    public boolean lleno = false;
     private String rol;
     private AID partyHost;
 
@@ -25,6 +26,7 @@ public class PartyAgent extends Agent {
 
     protected void setup() {
 
+    	registerList();
         registerAgent();
 
         Random rnd = new Random();
@@ -38,7 +40,6 @@ public class PartyAgent extends Agent {
                 System.out.println(myAgent.getLocalName() + "[WakerBehaviour] : He llegado a la fiesta");
                 myAgent.addBehaviour(new SaludarBehaviour());
                 myAgent.addBehaviour(new BienvenidaBehaviour());
-
             }
 
         });
@@ -47,6 +48,11 @@ public class PartyAgent extends Agent {
         
 
     }
+
+	private void registerList() {
+		ListaInvitados.registrar(getAID());
+		
+	}
 
 	private void registerAgent() {
 		
@@ -95,7 +101,9 @@ public class PartyAgent extends Agent {
 
 		@Override
 		public void action() {
-			// TODO Auto-generated method stub
+			if (DFAgentDscDlg.this.getComponentCount()==ListaInvitados.numInvitados()){
+				
+			}
 			
 		}
 
