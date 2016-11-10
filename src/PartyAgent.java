@@ -1,3 +1,4 @@
+import java.security.acl.Acl;
 import java.util.Random;
 
 import jade.core.AID;
@@ -42,8 +43,15 @@ public class PartyAgent extends Agent {
     				System.out.println(myAgent.getLocalName() + "[WakerBehaviour] : He llegado a la fiesta");
     				myAgent.addBehaviour(new SaludarBehaviour());
     				myAgent.addBehaviour(new BienvenidaBehaviour());
+    				
     			}
     		});
+    		
+    		ACLMessage start = this.receive();
+    		System.out.println("Agente "+getLocalName()+": esperando a que de coomienzo la fiesta...");
+    		ACLMessage mensaje = blockingReceive(MessageTemplate.MatchProtocol("Disfrutad de la fiesta!"));
+    		this.addBehaviour(Comer);
+    		this.addBehaviour(Beber);
     	}
         	
     }
@@ -112,15 +120,15 @@ public class PartyAgent extends Agent {
 	        template.addServices(sd);
 	        templateC.addServices(sdC);
 	        
-	        DFAgentDescription[] lista;
+	        DFAgentDescription[] listaG;
 	        DFAgentDescription[] listaC;
 	        AID aux;
 	        
 	        try {
-	          	lista = DFService.search(myAgent, template);
+	          	listaG = DFService.search(myAgent, template);
 	          	listaC = DFService.search(myAgent, templateC);
 	          	
-	          	if (ListaInvitados.numInvitados()== lista.length && rol.equals("Host")){
+	          	if (ListaInvitados.numInvitados()== listaG.length && rol.equals("Host")){
 	          		
 	          		ACLMessage msgC= new ACLMessage(ACLMessage.REQUEST);
 	          		ACLMessage msgG= new ACLMessage(ACLMessage.INFORM);
@@ -128,8 +136,13 @@ public class PartyAgent extends Agent {
 	          		for (int i=0; i<listaC.length; i++){
 	          			aux=listaC[i].getName();
 	          			msgC.addReceiver(aux);
-	          		}      		
+	          		}  
+	          		for (int i=0; i<listaG.length; i++){
+	          			aux=listaG[i].getName();
+	          			msgG.addReceiver(aux);
+	          		} 
 	          		msgC.setContent("Camareros!!!");
+	          		msgG.setContent("Disfrutad de la fiesta!");
 	          		comienzo=true;
 	          	}
 	        }
