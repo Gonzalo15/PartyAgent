@@ -18,8 +18,8 @@ import jade.lang.acl.MessageTemplate;
 @SuppressWarnings("serial")
 public class PartyAgent extends Agent {
 
-    public boolean fiesta = false;
     private String rol;
+    private boolean comienzo= false;
     private AID partyHost;
 
 
@@ -27,7 +27,7 @@ public class PartyAgent extends Agent {
     protected void setup() {
 
     	registerList();
-        registerAgent();
+        
 
         Random rnd = new Random();
         int wakeTime = (int) (rnd.nextDouble()* 99 + 1); //Random de 1 a 100 ( el 99 es el numero de elementeos y el 1 el primer numero
@@ -35,8 +35,7 @@ public class PartyAgent extends Agent {
         addBehaviour(new WakerBehaviour(this, wakeTime) {
             @Override
             protected void onWake() {
-
-                fiesta = true;
+            	
                 System.out.println(myAgent.getLocalName() + "[WakerBehaviour] : He llegado a la fiesta");
                 myAgent.addBehaviour(new SaludarBehaviour());
                 myAgent.addBehaviour(new BienvenidaBehaviour());
@@ -44,8 +43,9 @@ public class PartyAgent extends Agent {
 
         });
 
-        addBehaviour(new LlenaBehaviour());
-        
+        if(rol.equals("Host")){
+        	addBehaviour(new LlenaBehaviour());
+        }
 
     }
 
@@ -101,16 +101,49 @@ public class PartyAgent extends Agent {
 
 		@Override
 		public void action() {
-			if (DFAgentDscDlg.this.getComponentCount()==ListaInvitados.numInvitados()){
-				
-			}
+			 
+			DFAgentDescription template = new DFAgentDescription();
+			DFAgentDescription templateC = new DFAgentDescription();
+			
+	        ServiceDescription sd = new ServiceDescription();
+	        ServiceDescription sdC = new ServiceDescription();
+	        
+	        sd.setType("Guest");
+	        sdC.setType("Camarero");
+	        
+	        template.addServices(sd);
+	        templateC.addServices(sdC);
+	        
+	        DFAgentDescription[] lista;
+	        DFAgentDescription[] listaC;
+	        AID aux;
+	        
+	        try {
+	          	lista = DFService.search(myAgent, template);
+	          	listaC = DFService.search(myAgent, templateC);
+	          	
+	          	if (ListaInvitados.numInvitados()== lista.length && rol.equals("Host")){
+	          		
+	          		ACLMessage msg= new ACLMessage(ACLMessage.REQUEST);
+	          		for (int i=0; i<listaC.length; i++){
+	          			aux=listaC[i].getName();
+	          			msg.addReceiver(aux);
+	          		}      		
+	          		msg.setContent("Camareros!!!");
+	          		comienzo=true;
+	          	}
+	        }
+	         catch (FIPAException fe) {
+	             fe.printStackTrace();
+	        }
+	       
 			
 		}
 
 		@Override
 		public boolean done() {
 			// TODO Auto-generated method stub
-			return false;
+			return comienzo;
 		}
 		
 	}
@@ -121,7 +154,8 @@ public class PartyAgent extends Agent {
     	
         @Override
         public void action() {
-        	System.out.println(myAgent.getLocalName() + "[WakerBehaviour] : Hola a tod@s");         
+        	registerAgent();
+        	System.out.println(myAgent.getLocalName() + "[OneShootBehaviour] : Hola a tod@s");         
 
             DFAgentDescription template = new DFAgentDescription();
             ServiceDescription sd = new ServiceDescription();
