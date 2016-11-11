@@ -3,8 +3,10 @@ import java.util.Random;
 
 import jade.core.AID;
 import jade.core.Agent;
+import jade.core.behaviours.Behaviour;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.OneShotBehaviour;
+import jade.core.behaviours.ParallelBehaviour;
 import jade.core.behaviours.SequentialBehaviour;
 import jade.core.behaviours.SimpleBehaviour;
 import jade.core.behaviours.WakerBehaviour;
@@ -21,6 +23,8 @@ public class PartyAgent extends Agent {
 
     private static String rol;
     private boolean comienzo= false;
+    private int hambre;
+    private int sed;
     private AID partyHost;
 
 
@@ -28,13 +32,16 @@ public class PartyAgent extends Agent {
     protected void setup() {
 
     	registerList();
+    	Random rnd = new Random();
+    	hambre = (int) (rnd.nextDouble()* 10);
+    	sed = (int) (rnd.nextDouble()*10);
     	
     	if(this.getAID().toString().contains("Host")){
     		registerAgent("Host");
+    		partyHost=this.getAID();
     		addBehaviour(new LlenaBehaviour());
     	}
     	else{
-    		Random rnd = new Random();
     		int wakeTime = (int) (rnd.nextDouble()* 99 + 1); //Random de 1 a 100 ( el 99 es el numero de elementeos y el 1 el primer numero
     		blockingReceive(wakeTime);
     		addBehaviour(new WakerBehaviour(this, wakeTime) {
@@ -46,12 +53,14 @@ public class PartyAgent extends Agent {
     				
     			}
     		});
-    		
-    		ACLMessage start = this.receive();
     		System.out.println("Agente "+getLocalName()+": esperando a que de coomienzo la fiesta...");
-    		ACLMessage mensaje = blockingReceive(MessageTemplate.MatchProtocol("Disfrutad de la fiesta!"));
-    		this.addBehaviour(Comer);
-    		this.addBehaviour(Beber);
+    		
+    		MessageTemplate mt = MessageTemplate.and(MessageTemplate.MatchContent("Disfrutad de la fiesta!"), 
+    							 MessageTemplate.MatchSender(partyHost));
+    		
+    		ACLMessage mensaje = blockingReceive(mt);
+    		this.addBehaviour(new Comer());
+    		this.addBehaviour(new Beber());
     	}
         	
     }
@@ -223,8 +232,61 @@ public class PartyAgent extends Agent {
         public boolean done() {
             return false;
         }
-     //REGISTRAR LA ENTRADA Y SALIDA DE LAS PERSONAS EN LAS PAGINAS AMARILLAS
-
-
     }
+    
+    private class Comer extends Behaviour{
+    	MessageTemplate mt = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.REQUEST),
+							 MessageTemplate.MatchContent("Le apetece comer algo?"));
+    						
+    	private boolean lleno=false;
+		@Override
+		public void action() {
+			
+			while (hambre>0){
+				ACLMessage msg= myAgent.receive(mt);
+				ACLMessage reply = msg.createReply();
+				reply.setPerformative(ACLMessage.ACCEPT_PROPOSAL);
+				reply.setContent("Si por favor");
+				myAgent.send(reply);
+				
+				hambre--;
+			}
+			lleno=true;
+			
+		}
+
+		@Override
+		public boolean done() {
+			return lleno;
+		}
+			
+    }
+    
+    private class Beber extends Behaviour{
+    	MessageTemplate mt = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.REQUEST),
+				 			 MessageTemplate.MatchContent("Le apetece beber algo?"));
+				
+    	private boolean saciado=false;
+		@Override
+		public void action() {
+			while (sed>0){
+				ACLMessage msg= myAgent.receive(mt);
+				ACLMessage reply = msg.createReply();
+				reply.setPerformative(ACLMessage.ACCEPT_PROPOSAL);
+				reply.setContent("Si por favor");
+				myAgent.send(reply);
+				
+				sed--;
+			}
+			saciado=true;
+			
+		}
+
+		@Override
+		public boolean done() {
+			return saciado;
+		}
+    	
+    }
+    
 }
