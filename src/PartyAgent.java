@@ -259,7 +259,6 @@ public class PartyAgent extends Agent {
 		public boolean done() {
 			return lleno;
 		}
-		//
     }
     
     private class Beber extends Behaviour{
