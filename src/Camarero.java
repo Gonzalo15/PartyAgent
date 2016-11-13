@@ -54,13 +54,27 @@ public class Camarero extends Agent {
 						msg.setSender(myAgent.getAID());
 						msg.addReceiver(lista[invitado].getName());
 						//FALTA DEFINIR COMO PONER EL CONTENIDO DEL MENSAJE
+						String content="food";
 						msg.setContent(content);
+						String conver= content + lista[invitado].getName();
+						msg.setConversationId(conver);
 						System.out.println("[tickerbehaviour] " + getLocalName()+"¿Desea"+ content+"?");
 						myAgent.send(msg);
 //						EnviarMensaje("Le apetece algo de comer");
 //						EnviarMensaje("Le apetece algo de beber");
-						
-					}
+						MessageTemplate mt = MessageTemplate.MatchConversationId(conver);
+
+						ACLMessage msg2 = myAgent.blockingReceive(mt);
+
+						if (msg2 != null && msg2.getPerformative() == ACLMessage.ACCEPT_PROPOSAL) {
+							ACLMessage reply = msg2.createReply();
+							reply.setPerformative(ACLMessage.CONFIRM);
+							System.out.println(getLocalName() + " [ServeItemBehaviour] : Aqui tienes "
+									+ msg2.getSender().getLocalName());
+							myAgent.send(reply);
+						}
+
+	}
 				} catch (FIPAException fe) {
 					fe.printStackTrace();
 				}
