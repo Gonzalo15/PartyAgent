@@ -19,8 +19,6 @@ public class Camarero extends Agent {
 		Random rnd = new Random();
 		ACLMessage msg = this.receive();
 		System.out.println("Agente " + getLocalName() + ": esperando un mensaje REQUEST...");
-		// MessageTemplate m =
-		// MessageTemplate.MatchConversationId(msg.getContent());
 		ACLMessage mensaje = blockingReceive(MessageTemplate.MatchPerformative(ACLMessage.REQUEST));
 		System.out.println("Agente " + getLocalName() + ": he recibido mensaje REQUEST.");
 		System.out.println("Agente " + getLocalName() + ": es hora de trabajar");
@@ -44,7 +42,7 @@ public class Camarero extends Agent {
 					// FOR PARA METER TODOS LOS INVITADOS
 					lista = DFService.search(myAgent, template);
 					if(lista.length==0){
-						System.out.println("[tickerbehaviour] " + getLocalName()+"Se acavo la fiesta, hora de dormir");
+						System.out.println("[Tickerbehaviour] " + getLocalName()+"Se acavo la fiesta, hora de dormir");
 						//ELIMINAR EL COMPORTAMIENTO
 					}
 					else{
@@ -58,10 +56,8 @@ public class Camarero extends Agent {
 						msg.setContent(content);
 						String conver= content + lista[invitado].getName();
 						msg.setConversationId(conver);
-						System.out.println("[tickerbehaviour] " + getLocalName()+"�Desea"+ content+"?");
+						System.out.println("[Tickerbehaviour] " + getLocalName()+"¿Desea"+ content+"?");
 						myAgent.send(msg);
-//						EnviarMensaje("Le apetece algo de comer");
-//						EnviarMensaje("Le apetece algo de beber");
 						MessageTemplate mt = MessageTemplate.MatchConversationId(conver);
 
 						ACLMessage msg2 = myAgent.blockingReceive(mt);
@@ -88,30 +84,6 @@ public class Camarero extends Agent {
 		});
 	}
 
-//	private void EnviarMensaje(String s) {
-//		ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
-//		msg.setContent(s);
-//		msg.setSender(this.getAID());
-//		// partyHost = DFService.search(myAgent, template)[0].getName();
-//		// msg.addReceiver(partyHost);
-//		DFAgentDescription template = new DFAgentDescription();
-//		ServiceDescription sd = new ServiceDescription();
-//		sd.setType("Guest");
-//		template.addServices(sd);
-//
-//		try {
-//			for (DFAgentDescription df : DFService.search(this, template)) {
-//				msg.addReceiver(df.getName());
-//			}
-//		} catch (FIPAException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//
-//		this.send(msg);
-//
-//	}
-
 	private void registerCamarero(String localName) {
 		DFAgentDescription dfd = new DFAgentDescription();
 		dfd.setName(getAID());
@@ -130,7 +102,7 @@ public class Camarero extends Agent {
 
 	@Override
 	protected void takeDown() {
-		System.out.println(getLocalName() + " se march� de la fiesta");
+		System.out.println(getLocalName() + " se marchó de la fiesta");
 		this.doDelete();
 	}
 
