@@ -38,20 +38,21 @@ public class PartyAgent extends Agent {
     		
     		addBehaviour(new LlenaBehaviour());
     		addBehaviour(new BienvenidaBehaviour());
+    		addBehaviour(new DespedidaBehaviour());
     		
     	}
     	else{
 
     		registerAgent("Guest");
-    		int wakeTime = (int) (rnd.nextDouble()* 4 + 1); //Random de 1 a 100 ( el 99 es el numero de elementeos y el 1 el primer numero
+    		int wakeTime = (int) (rnd.nextDouble()* 10 + 1); //Random de 1 a 100 ( el 99 es el numero de elementeos y el 1 el primer numero
     		System.out.println(wakeTime);
     		addBehaviour(new WakerBehaviour(this, wakeTime*1000) {
     			@Override
     			protected void onWake() {
     				registerList();
     				System.out.println("[WakerBehaviour] "+myAgent.getLocalName() + ": He llegado a la fiesta");
-    				hambre = (int) (rnd.nextDouble()* 10+1);
-    	        	sed = (int) (rnd.nextDouble()*10+1);
+    				hambre = (int) (rnd.nextDouble()* 4+1);
+    	        	sed = (int) (rnd.nextDouble()*4+1);
     	        	System.out.println("[Control de usuario] El hambre de "+getLocalName()+" es: "+hambre);
     				addBehaviour(new SaludarBehaviour());
     				addBehaviour(new BienvenidaBehaviour());
@@ -294,6 +295,16 @@ public class PartyAgent extends Agent {
 		}
 		@Override
 				public int onEnd() {
+					ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
+					msg.setContent("Adios");
+					msg.addReceiver(partyHost);
+					send(msg);
+					System.out.println("[onEnd] "+ getLocalName()+": adios Host");
+					
+					MessageTemplate mt = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.INFORM),
+										 MessageTemplate.MatchContent("Adios"));
+					ACLMessage msg1 = myAgent.blockingReceive(mt);
+					 
 					myAgent.doDelete();
 					ListaInvitados.borrar(getAID());
 					return super.onEnd();
@@ -360,10 +371,32 @@ public class PartyAgent extends Agent {
 				System.out.println("[OneShotBehaviour]"+getLocalName()+": No, gracias");
 				myAgent.send(reply);
 			}
-
-
-}
+		}
     	
     }
     
+    private class DespedidaBehaviour extends SimpleBehaviour{
+
+		@Override
+		public void action() {
+			 MessageTemplate mt = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.INFORM),
+						MessageTemplate.MatchContent("Adios"));
+			 ACLMessage msg = myAgent.receive(mt);
+			 
+			 if (msg != null && !msg.getSender().equals(myAgent.getAID())) {
+	                ACLMessage reply = msg.createReply();
+	                System.out.println("[DespedidaBehaviour] "+myAgent.getLocalName() + " : Adios " + msg.getSender().getLocalName());
+	                reply.setContent("Adios");
+	                myAgent.send(reply);
+	            }
+			
+		}
+
+		@Override
+		public boolean done() {
+			// TODO Auto-generated method stub
+			return false;
+		}
+    	
+    }
 }

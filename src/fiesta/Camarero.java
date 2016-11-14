@@ -34,7 +34,9 @@ public class Camarero extends Agent {
 			protected void onTick() {
 				DFAgentDescription template = new DFAgentDescription();
 				ServiceDescription sd = new ServiceDescription();
+				ServiceDescription sd1 = new ServiceDescription();
 				sd.setType("Guest");
+				sd1.setType("Host");
 				template.addServices(sd);
 
 				DFAgentDescription[] lista;
