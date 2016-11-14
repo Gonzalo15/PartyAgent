@@ -1,3 +1,4 @@
+package fiesta;
 import java.security.acl.Acl;
 import java.util.Random;
 
@@ -31,36 +32,45 @@ public class PartyAgent extends Agent {
 
     protected void setup() {
 
-    	registerList();
+    	
     	Random rnd = new Random();
     	hambre = (int) (rnd.nextDouble()* 10);
     	sed = (int) (rnd.nextDouble()*10);
     	
     	if(this.getAID().toString().contains("Host")){
+    		
     		registerAgent("Host");
     		partyHost=this.getAID();
     		addBehaviour(new LlenaBehaviour());
+    		System.out.println("Host esta aqui");
     	}
     	else{
-    		int wakeTime = (int) (rnd.nextDouble()* 99 + 1); //Random de 1 a 100 ( el 99 es el numero de elementeos y el 1 el primer numero
-    		blockingReceive(wakeTime);
-    		addBehaviour(new WakerBehaviour(this, wakeTime) {
+    		
+    		registerAgent("Guest");
+    		int wakeTime = (int) (rnd.nextDouble()* 10 + 1); //Random de 1 a 100 ( el 99 es el numero de elementeos y el 1 el primer numero
+    		System.out.println(wakeTime);
+//    		blockingReceive(wakeTime);
+    		addBehaviour(new WakerBehaviour(this, wakeTime*1000) {
     			@Override
     			protected void onWake() {
+    				registerList();
     				System.out.println(myAgent.getLocalName() + "[WakerBehaviour] : He llegado a la fiesta");
-    				myAgent.addBehaviour(new SaludarBehaviour());
-    				myAgent.addBehaviour(new BienvenidaBehaviour());
+    				//System.out.println(myAgent);
+    				addBehaviour(new SaludarBehaviour());
+    				addBehaviour(new BienvenidaBehaviour());
+    				
+    				System.out.println("Agente "+getLocalName()+": esperando a que de coomienzo la fiesta...");
+    	    		
+    	    		MessageTemplate mt = MessageTemplate.and(MessageTemplate.MatchContent("Disfrutad de la fiesta!"),
+    	    							 MessageTemplate.MatchSender(partyHost));
+    	    		//MessageTemplate mt = MessageTemplate.MatchContent("Disfrutad de la fiesta!");
+    	    		//System.out.println(mt);
+    	    		ACLMessage mensaje = blockingReceive(mt);
+    	    		addBehaviour(new Comer());
+    	    		addBehaviour(new Beber());
     				
     			}
     		});
-    		System.out.println("Agente "+getLocalName()+": esperando a que de coomienzo la fiesta...");
-    		
-    		MessageTemplate mt = MessageTemplate.and(MessageTemplate.MatchContent("Disfrutad de la fiesta!"), 
-    							 MessageTemplate.MatchSender(partyHost));
-    		
-    		ACLMessage mensaje = blockingReceive(mt);
-    		this.addBehaviour(new Comer());
-    		this.addBehaviour(new Beber());
     	}
         	
     }
@@ -137,7 +147,10 @@ public class PartyAgent extends Agent {
 	          	listaG = DFService.search(myAgent, template);
 	          	listaC = DFService.search(myAgent, templateC);
 	          	
-	          	if (ListaInvitados.numInvitados()== listaG.length && rol.equals("Host")){
+//	          	System.out.println(rol);
+//	          	System.out.println(ListaInvitados.numInvitados());
+//	          	System.out.println(listaG.length);
+	          	if (ListaInvitados.numInvitados()== listaG.length){ //&& rol.equals("Host")){
 	          		
 	          		ACLMessage msgC= new ACLMessage(ACLMessage.REQUEST);
 	          		ACLMessage msgG= new ACLMessage(ACLMessage.INFORM);
@@ -152,6 +165,8 @@ public class PartyAgent extends Agent {
 	          		} 
 	          		msgC.setContent("Camareros!!!");
 	          		msgG.setContent("Disfrutad de la fiesta!");
+	          		send(msgC);
+	          		send(msgG);
 	          		comienzo=true;
 	          	}
 	        }
@@ -176,7 +191,7 @@ public class PartyAgent extends Agent {
     	
         @Override
         public void action() {
-        	registerAgent("Guest");
+        	//registerAgent("Guest");
         	System.out.println(myAgent.getLocalName() + "[OneShootBehaviour] : Hola a tod@s");         
 
             DFAgentDescription template = new DFAgentDescription();

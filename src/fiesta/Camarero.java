@@ -1,3 +1,4 @@
+package fiesta;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.TickerBehaviour;
@@ -23,7 +24,6 @@ public class Camarero extends Agent {
 		System.out.println("Agente " + getLocalName() + ": he recibido mensaje REQUEST.");
 		System.out.println("Agente " + getLocalName() + ": es hora de trabajar");
 		ACLMessage reply = new ACLMessage(ACLMessage.INFORM);
-		reply.addReceiver(msg.getSender());
 		reply.setContent("a sus ordenes");
 		send(reply);
 
@@ -52,11 +52,11 @@ public class Camarero extends Agent {
 						msg.setSender(myAgent.getAID());
 						msg.addReceiver(lista[invitado].getName());
 						//FALTA DEFINIR COMO PONER EL CONTENIDO DEL MENSAJE
-						String content="food";
-						msg.setContent(content);
+						String content="comer";
+						msg.setContent("Le apetece comer algo?");
 						String conver= content + lista[invitado].getName();
 						msg.setConversationId(conver);
-						System.out.println("[Tickerbehaviour] " + getLocalName()+"¿Desea"+ content+"?");
+						System.out.println("[Tickerbehaviour] " + getLocalName()+" Le apetece "+ content+ " algo?");
 						myAgent.send(msg);
 						MessageTemplate mt = MessageTemplate.MatchConversationId(conver);
 
@@ -77,7 +77,7 @@ public class Camarero extends Agent {
 			}
 
 			private AID getAID() {
-				// TODO Auto-generated method stub
+			
 				return null;
 			}
 
