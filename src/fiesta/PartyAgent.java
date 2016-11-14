@@ -58,8 +58,9 @@ public class PartyAgent extends Agent {
     				System.out.println("Agente "+getLocalName()+": esperando a que de coomienzo la fiesta...");
     	    		
     				addBehaviour(new accionBehaviour());
-    				
+    				//removeBehaviour(new accionBehaviour());
     			}
+    			
     		});
     	}
         	
@@ -94,17 +95,18 @@ public class PartyAgent extends Agent {
 		
 	}
 
+	
 	@Override
     protected void takeDown() {
 		Random rnd = new Random();
 		if(rnd.nextInt(100)>98){
 	        System.out.println(getLocalName()+" se muere de indigestion");
 	        ListaInvitados.borrar(getAID());
-	        this.doDelete();
+
 		}else{
 			System.out.println(getLocalName()+" se marcho de la fiesta");
 			ListaInvitados.borrar(getAID());
-			this.doDelete();
+
 		}
     }
 
@@ -116,11 +118,12 @@ public class PartyAgent extends Agent {
 					 MessageTemplate.MatchSender(partyHost));
 
 			ACLMessage mensaje = blockingReceive(mt);
+			//removeBehaviour(new SaludarBehaviour());
+			removeBehaviour(new BienvenidaBehaviour());
 			
 			addBehaviour(new alimentarse());
+			//removeBehaviour(new alimentarse());
 
-
-			
 		}
 
 	}
@@ -270,7 +273,6 @@ public class PartyAgent extends Agent {
 					addBehaviour(new Comer(msg));
 	    		else if(text.contains("beber"))
 	    			addBehaviour(new Beber(msg));
-
 	    	}
 //
 //			MessageTemplate tp = MessageTemplate.MatchPerformative(ACLMessage.PROPOSE);
@@ -286,8 +288,23 @@ public class PartyAgent extends Agent {
 		@Override
 		public boolean done() {
 
+//			if(hambre==0 && sed==0){
+//				//removeBehaviour(parent);
+//				removeBehaviour(new alimentarse());
+//				return true;
+//			}
+//			else{
+//				return false;
+//			}
 			return (hambre==0 && sed==0);
+			
 		}
+		@Override
+				public int onEnd() {
+					myAgent.doDelete();
+					ListaInvitados.borrar(getAID());
+					return super.onEnd();
+				}
 
 
     }
@@ -304,19 +321,19 @@ public class PartyAgent extends Agent {
 			
 			
 			if(hambre>0){
-				System.out.println(getLocalName()+": Me comer�a "+ hambre +" canapes");
-			ACLMessage reply = msg.createReply();
-			reply.setPerformative(ACLMessage.ACCEPT_PROPOSAL);
-			reply.setContent("Si por favor");
-			myAgent.send(reply);
+				System.out.println("[OneShotBehaviour]"+getLocalName()+": Me comeria "+ hambre +" canapes");
+				ACLMessage reply = msg.createReply();
+				reply.setPerformative(ACLMessage.ACCEPT_PROPOSAL);
+				reply.setContent("Si por favor");
+				myAgent.send(reply);
 				
-			hambre--;
+				hambre--;
 			}
 			else{
 				ACLMessage reply = msg.createReply();
 				reply.setPerformative(ACLMessage.REJECT_PROPOSAL);
 				reply.setContent("No, gracias");
-				System.out.println(getLocalName()+" No, gracias");
+				System.out.println("[OneShotBehaviour]"+getLocalName()+": No, gracias");
 				myAgent.send(reply);
 			}
 			
@@ -336,7 +353,7 @@ public class PartyAgent extends Agent {
 		public void action() {
 
 			if (sed > 0) {
-				System.out.println(getLocalName() + ": Me beberia " + sed + " cervezas");
+				System.out.println("[OneShotBehaviour]"+getLocalName() + ": Me beberia " + sed + " cervezas");
 				ACLMessage reply = msg.createReply();
 				reply.setPerformative(ACLMessage.ACCEPT_PROPOSAL);
 				reply.setContent("Si por favor");
@@ -347,7 +364,7 @@ public class PartyAgent extends Agent {
 				ACLMessage reply = msg.createReply();
 				reply.setPerformative(ACLMessage.REJECT_PROPOSAL);
 				reply.setContent("No, gracias");
-				System.out.println(getLocalName()+"No, gracias");
+				System.out.println("[OneShotBehaviour]"+getLocalName()+": No, gracias");
 				myAgent.send(reply);
 			}
 

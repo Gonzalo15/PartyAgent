@@ -1,4 +1,5 @@
 package fiesta;
+import jade.content.onto.basic.Done;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.TickerBehaviour;
@@ -47,9 +48,10 @@ public class Camarero extends Agent {
 //					listabebida = DFService.search(myAgent, template);
 					lista = DFService.search(myAgent, template);
 
-					if(lista.length==0/*listacomida.length==0 && listabebida.length==0*/){
+					if(ListaInvitados.numInvitados()==0/*listacomida.length==0 && listabebida.length==0*/){
 						System.out.println("[Tickerbehaviour] " + getLocalName()+": Se acabo la fiesta, hora de dormir");
 						//ELIMINAR EL COMPORTAMIENTO
+						myAgent.removeBehaviour(this);
 					}
 					else{
 						Random random = new Random();
@@ -92,15 +94,10 @@ public class Camarero extends Agent {
 							myAgent.send(reply);
 						}
 
-	}
+					}
 				} catch (FIPAException fe) {
 					fe.printStackTrace();
 				}
-			}
-
-			private AID getAID() {
-			
-				return null;
 			}
 
 		});
