@@ -34,31 +34,29 @@ public class PartyAgent extends Agent {
     		
     		registerAgent("Host");
     		partyHost=this.getAID();
+    		System.out.println("[setup] Host esta aqui");
+    		
     		addBehaviour(new LlenaBehaviour());
-    		System.out.println("Host esta aqui");
+    		addBehaviour(new BienvenidaBehaviour());
+    		
     	}
     	else{
 
     		registerAgent("Guest");
-    		int wakeTime = (int) (rnd.nextDouble()* 10 + 1); //Random de 1 a 100 ( el 99 es el numero de elementeos y el 1 el primer numero
+    		int wakeTime = (int) (rnd.nextDouble()* 4 + 1); //Random de 1 a 100 ( el 99 es el numero de elementeos y el 1 el primer numero
     		System.out.println(wakeTime);
-//    		blockingReceive(wakeTime);
     		addBehaviour(new WakerBehaviour(this, wakeTime*1000) {
     			@Override
     			protected void onWake() {
     				registerList();
-    				System.out.println(myAgent.getLocalName() + "[WakerBehaviour] : He llegado a la fiesta");
+    				System.out.println("[WakerBehaviour] "+myAgent.getLocalName() + ": He llegado a la fiesta");
     				hambre = (int) (rnd.nextDouble()* 10+1);
     	        	sed = (int) (rnd.nextDouble()*10+1);
-    	        	System.out.println("el hambre de"+getLocalName()+" es:"+hambre);
-    				//System.out.println(myAgent);
+    	        	System.out.println("[Control de usuario] El hambre de "+getLocalName()+" es: "+hambre);
     				addBehaviour(new SaludarBehaviour());
     				addBehaviour(new BienvenidaBehaviour());
-    				
-    				System.out.println("Agente "+getLocalName()+": esperando a que de coomienzo la fiesta...");
-    	    		
+    				System.out.println("[WakerBehaviour] "+getLocalName()+": esperando a que de coomienzo la fiesta...");
     				addBehaviour(new accionBehaviour());
-    				//removeBehaviour(new accionBehaviour());
     			}
     			
     		});
@@ -118,11 +116,8 @@ public class PartyAgent extends Agent {
 					 MessageTemplate.MatchSender(partyHost));
 
 			ACLMessage mensaje = blockingReceive(mt);
-			//removeBehaviour(new SaludarBehaviour());
-			removeBehaviour(new BienvenidaBehaviour());
-			
+			removeBehaviour(new BienvenidaBehaviour());			
 			addBehaviour(new alimentarse());
-			//removeBehaviour(new alimentarse());
 
 		}
 
@@ -157,10 +152,7 @@ public class PartyAgent extends Agent {
 	          	listaG = DFService.search(myAgent, template);
 	          	listaC = DFService.search(myAgent, templateC);
 	          	
-//	          	System.out.println(rol);
-//	          	System.out.println(ListaInvitados.numInvitados());
-//	          	System.out.println(listaG.length);
-	          	if (ListaInvitados.numInvitados()== listaG.length){ //&& rol.equals("Host")){
+	          	if (ListaInvitados.numInvitados()== listaG.length){ 
 	          		
 	          		ACLMessage msgC= new ACLMessage(ACLMessage.REQUEST);
 	          		ACLMessage msgG= new ACLMessage(ACLMessage.INFORM);
@@ -177,6 +169,7 @@ public class PartyAgent extends Agent {
 	          		msgG.setContent("Disfrutad de la fiesta!");
 	          		send(msgC);
 	          		send(msgG);
+	          		System.out.println("[llenaBehaviour] Host: Que comience la fiesta");
 	          		System.out.println("[llenaBehaviour] Host: Camareros!!!");
 	          		comienzo=true;
 	          	}
@@ -190,7 +183,6 @@ public class PartyAgent extends Agent {
 
 		@Override
 		public boolean done() {
-			// TODO Auto-generated method stub
 			return comienzo;
 		}
 		
@@ -203,7 +195,7 @@ public class PartyAgent extends Agent {
         @Override
         public void action() {
         	//registerAgent("Guest");
-        	System.out.println(myAgent.getLocalName() + "[OneShootBehaviour] : Hola a tod@s");         
+        	System.out.println("[OneShootBehaviour]"+myAgent.getLocalName() + " : Hola a tod@s");         
 
             DFAgentDescription template = new DFAgentDescription();
             ServiceDescription sd = new ServiceDescription();
@@ -227,6 +219,7 @@ public class PartyAgent extends Agent {
                     msg.addReceiver(df.getName());
                 }
 
+                msg.removeReceiver(myAgent.getAID());
                 myAgent.send(msg);
             } catch (FIPAException fe) {
                 fe.printStackTrace();
@@ -247,7 +240,7 @@ public class PartyAgent extends Agent {
            
             if (msg != null && !msg.getSender().equals(myAgent.getAID())) {
                 ACLMessage reply = msg.createReply();
-                System.out.println(myAgent.getLocalName() + " [WelcomeBehaviour] : Hola " + msg.getSender().getLocalName());
+                System.out.println("[WelcomeBehaviour] "+myAgent.getLocalName() + " : Hola " + msg.getSender().getLocalName());
                 reply.setContent("Hola!!");
                 myAgent.send(reply);
             }

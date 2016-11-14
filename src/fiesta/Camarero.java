@@ -47,12 +47,12 @@ public class Camarero extends Agent {
 					if(ListaInvitados.numInvitados()==0/*listacomida.length==0 && listabebida.length==0*/){
 						System.out.println("[Tickerbehaviour] " + getLocalName()+": Se acabo la fiesta, hora de dormir");
 						//ELIMINAR EL COMPORTAMIENTO
-						myAgent.removeBehaviour(this);
+						//myAgent.removeBehaviour(this);
 						myAgent.doDelete();
 					}
 					else{
 						Random random = new Random();
-						int invitado = (int) (random.nextDouble()* lista.length);
+						int invitado = (int) (random.nextDouble()* ListaInvitados.numInvitados());
 						
 						String[] content={"comer","beber"};
 						int eleccion = (int) (random.nextDouble()*2);
@@ -60,12 +60,12 @@ public class Camarero extends Agent {
 						ACLMessage msg = new ACLMessage(ACLMessage.PROPOSE);
 						msg.setSender(myAgent.getAID());
 						
-						msg.addReceiver(lista[invitado].getName());
+						msg.addReceiver(ListaInvitados.getGuest(invitado));
 						
 						msg.setContent("Le apetece "+ content[eleccion]+" algo?");
-						String conver= content[eleccion] + lista[invitado].getName();
+						String conver= content[eleccion] + ListaInvitados.getGuest(invitado);
 						msg.setConversationId(conver);
-						System.out.println("[Tickerbehaviour] " + getLocalName()+" : "+lista[invitado].getName().getLocalName()+" Le apetece "+ content[eleccion]+ " algo?");
+						System.out.println("[Tickerbehaviour] " + getLocalName()+" : "+ListaInvitados.getGuest(invitado).getLocalName()+" Le apetece "+ content[eleccion]+ " algo?");
 						myAgent.send(msg);
 						MessageTemplate mt = MessageTemplate.MatchConversationId(conver);
 
@@ -74,14 +74,14 @@ public class Camarero extends Agent {
 						if (msg2 != null && msg2.getPerformative() == ACLMessage.ACCEPT_PROPOSAL) {
 							ACLMessage reply = msg2.createReply();
 							reply.setPerformative(ACLMessage.CONFIRM);
-							System.out.println("[ServeItemBehaviour] "+getLocalName() + " : Aqui tienes "
+							System.out.println("[Tickerbehaviour] "+getLocalName() + " : Aqui tienes "
 									+ msg2.getSender().getLocalName());
 							myAgent.send(reply);
 						}
 						else if(msg2 != null && msg2.getPerformative() == ACLMessage.REJECT_PROPOSAL){
 							ACLMessage reply = msg2.createReply();
 							reply.setPerformative(ACLMessage.CONFIRM);
-							System.out.println("[ServeItemBehaviour] "+getLocalName() + " : No hay de que "
+							System.out.println("[Tickerbehaviour] "+getLocalName() + " : No hay de que "
 									+ msg2.getSender().getLocalName());
 							myAgent.send(reply);
 						}

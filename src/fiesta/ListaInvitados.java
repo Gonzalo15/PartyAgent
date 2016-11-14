@@ -18,5 +18,9 @@ public class ListaInvitados{
 	public static void borrar(AID guest){
 		Lista.remove(guest);
 	}
+	
+	public static AID getGuest(int index){
+		return (AID) Lista.get(index);
+	}
 
 }
