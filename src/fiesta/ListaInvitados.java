@@ -15,5 +15,9 @@ public class ListaInvitados{
 	public static void registrar(AID guest){
 		Lista.add(guest);
 	}
+	
+	public static void borrar(AID guest){
+		Lista.remove(guest);
+	}
 
 }

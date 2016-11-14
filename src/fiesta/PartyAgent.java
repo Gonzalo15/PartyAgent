@@ -105,9 +105,11 @@ public class PartyAgent extends Agent {
 		Random rnd = new Random();
 		if(rnd.nextInt(100)>98){
 	        System.out.println(getLocalName()+" se muere de indigestion");
+	        ListaInvitados.borrar(getAID());
 	        this.doDelete();
 		}else{
 			System.out.println(getLocalName()+" se marcho de la fiesta");
+			ListaInvitados.borrar(getAID());
 			this.doDelete();
 		}
     }
@@ -261,25 +263,34 @@ public class PartyAgent extends Agent {
         }
     }
     private class alimentarse extends SimpleBehaviour{
-    		MessageTemplate mc = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.PROPOSE),
-					 			 MessageTemplate.MatchContent("Le apetece comer algo?"));
-			MessageTemplate mb = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.PROPOSE),
-		 			 MessageTemplate.MatchContent("Le apetece beber algo?"));
+//    		MessageTemplate mc = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.PROPOSE),
+//					 			 MessageTemplate.MatchContent("Le apetece comer algo?"));
+//			MessageTemplate mb = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.PROPOSE),
+//		 			 MessageTemplate.MatchContent("Le apetece beber algo?"));
 		@Override
 		public void action() {
-			MessageTemplate tp = MessageTemplate.MatchPerformative(ACLMessage.PROPOSE);
-			ACLMessage msg= blockingReceive(tp);
-			if(tp.MatchContent(mc.get)){
-				addBehaviour(new Comer(msg));
-			}
-			else if(tp==mb){
-				addBehaviour(new Beber(msg));
-			}			
+	    	ACLMessage msg = myAgent.receive(MessageTemplate.MatchPerformative(ACLMessage.PROPOSE));
+	    	if(msg!=null){
+	    		String text = msg.getContent();
+	    		if(text.contains("comer"))
+					addBehaviour(new Comer(msg));
+	    		else if(text.contains("beber"))
+	    			addBehaviour(new Beber(msg));
+
+	    	}
+//
+//			MessageTemplate tp = MessageTemplate.MatchPerformative(ACLMessage.PROPOSE);
+//			ACLMessage msg= blockingReceive(tp);
+//			if(tp.MatchContent("Le apetece comer algo?") != null){
+//				addBehaviour(new Comer(msg));
+//			}
+//			else if(tp.MatchContent("Le apetece beber algo?")!= null){
+//				addBehaviour(new Beber(msg));
+//			}			
 		}
 
 		@Override
 		public boolean done() {
-			// TODO Auto-generated method stub
 			return (hambre==0 && sed==0);
 		}
 
@@ -288,7 +299,6 @@ public class PartyAgent extends Agent {
     private class Comer extends OneShotBehaviour{
     	   						
     	ACLMessage msg;
-    	private boolean lleno=false;
 		
     	public Comer(ACLMessage msg) {
 			this.msg=msg;
@@ -311,6 +321,7 @@ public class PartyAgent extends Agent {
 				ACLMessage reply = msg.createReply();
 				reply.setPerformative(ACLMessage.REJECT_PROPOSAL);
 				reply.setContent("No, gracias");
+				System.out.println(getLocalName()+" No, gracias");
 				myAgent.send(reply);
 			}
 			
@@ -321,8 +332,7 @@ public class PartyAgent extends Agent {
     private class Beber extends OneShotBehaviour{
 			
 		ACLMessage msg;
-		private boolean lleno = false;
-
+		
 		public Beber(ACLMessage msg) {
 			this.msg=msg;
 		}
@@ -331,7 +341,7 @@ public class PartyAgent extends Agent {
 		public void action() {
 
 			if (sed > 0) {
-				System.out.println(getLocalName() + ": Me comería " + sed + " canapes");
+				System.out.println(getLocalName() + ": Me beberia " + sed + " cervezas");
 				ACLMessage reply = msg.createReply();
 				reply.setPerformative(ACLMessage.ACCEPT_PROPOSAL);
 				reply.setContent("Si por favor");
@@ -342,6 +352,7 @@ public class PartyAgent extends Agent {
 				ACLMessage reply = msg.createReply();
 				reply.setPerformative(ACLMessage.REJECT_PROPOSAL);
 				reply.setContent("No, gracias");
+				System.out.println(getLocalName()+"No, gracias");
 				myAgent.send(reply);
 			}
 

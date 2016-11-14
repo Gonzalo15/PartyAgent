@@ -30,39 +30,47 @@ public class Camarero extends Agent {
 		addBehaviour(new TickerBehaviour(this, 3000) {
 			@Override
 			protected void onTick() {
-				System.out.println("[tickerbehaviour] " + getLocalName());
+				//System.out.println("[tickerbehaviour] " + getLocalName());
 				DFAgentDescription template = new DFAgentDescription();
 				ServiceDescription sd = new ServiceDescription();
 				sd.setType("Guest");
 				template.addServices(sd);
+//				DFAgentDescription[] listacomida;
+//				DFAgentDescription[] listabebida;
 				DFAgentDescription[] lista;
 				AID aux;
 
 				try {
 					// FOR PARA METER TODOS LOS INVITADOS
+//					listacomida = DFService.search(myAgent, template);
+//					listabebida = DFService.search(myAgent, template);
 					lista = DFService.search(myAgent, template);
-					if(lista.length==0){
-						System.out.println("[Tickerbehaviour] " + getLocalName()+"Se acavo la fiesta, hora de dormir");
+
+					if(lista.length==0/*listacomida.length==0 && listabebida.length==0*/){
+						System.out.println("[Tickerbehaviour] " + getLocalName()+"Se acabo la fiesta, hora de dormir");
 						//ELIMINAR EL COMPORTAMIENTO
 					}
 					else{
 						Random random = new Random();
+//						int invitadocomida = (int) (random.nextDouble()* listacomida.length);
+//						int invitadobebida = (int) (random.nextDouble()* listabebida.length);
 						int invitado = (int) (random.nextDouble()* lista.length);
+						
+						String[] content={"comer","beber"};
 						int eleccion = (int) (random.nextDouble()*2);
-						System.out.println("eleccion:"+eleccion);
 						
 						ACLMessage msg = new ACLMessage(ACLMessage.PROPOSE);
 						msg.setSender(myAgent.getAID());
+						
 						msg.addReceiver(lista[invitado].getName());
 						
 						//FALTA DEFINIR COMO PONER EL CONTENIDO DEL MENSAJE
 						
-						String[] content={"comer","beber"};
 						
 						msg.setContent("Le apetece "+ content[eleccion]+" algo?");
 						String conver= content[eleccion] + lista[invitado].getName();
 						msg.setConversationId(conver);
-						System.out.println("[Tickerbehaviour] " + getLocalName()+" Le apetece "+ content[eleccion]+ " algo?");
+						System.out.println("[Tickerbehaviour] " + getLocalName()+" : "+lista[invitado].getName().getLocalName()+" Le apetece "+ content[eleccion]+ " algo?");
 						myAgent.send(msg);
 						MessageTemplate mt = MessageTemplate.MatchConversationId(conver);
 
