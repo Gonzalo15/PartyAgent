@@ -25,6 +25,7 @@ public class Camarero extends Agent {
 		System.out.println("Agente " + getLocalName() + ": es hora de trabajar");
 		ACLMessage reply = new ACLMessage(ACLMessage.INFORM);
 		reply.setContent("a sus ordenes");
+		System.out.println("Agente "+getLocalName()+" : "+reply.getContent());
 		send(reply);
 
 		addBehaviour(new TickerBehaviour(this, 3000) {
@@ -47,7 +48,7 @@ public class Camarero extends Agent {
 					lista = DFService.search(myAgent, template);
 
 					if(lista.length==0/*listacomida.length==0 && listabebida.length==0*/){
-						System.out.println("[Tickerbehaviour] " + getLocalName()+"Se acabo la fiesta, hora de dormir");
+						System.out.println("[Tickerbehaviour] " + getLocalName()+": Se acabo la fiesta, hora de dormir");
 						//ELIMINAR EL COMPORTAMIENTO
 					}
 					else{
@@ -79,14 +80,14 @@ public class Camarero extends Agent {
 						if (msg2 != null && msg2.getPerformative() == ACLMessage.ACCEPT_PROPOSAL) {
 							ACLMessage reply = msg2.createReply();
 							reply.setPerformative(ACLMessage.CONFIRM);
-							System.out.println(getLocalName() + " [ServeItemBehaviour] : Aqui tienes "
+							System.out.println("[ServeItemBehaviour] "+getLocalName() + " : Aqui tienes "
 									+ msg2.getSender().getLocalName());
 							myAgent.send(reply);
 						}
 						else if(msg2 != null && msg2.getPerformative() == ACLMessage.REJECT_PROPOSAL){
 							ACLMessage reply = msg2.createReply();
 							reply.setPerformative(ACLMessage.CONFIRM);
-							System.out.println(getLocalName() + " [ServeItemBehaviour] : No hay de que "
+							System.out.println("[ServeItemBehaviour] "+getLocalName() + " : No hay de que "
 									+ msg2.getSender().getLocalName());
 							myAgent.send(reply);
 						}
@@ -123,7 +124,7 @@ public class Camarero extends Agent {
 
 	@Override
 	protected void takeDown() {
-		System.out.println(getLocalName() + " se marchó de la fiesta");
+		System.out.println(getLocalName() + " se marcha de la fiesta");
 		this.doDelete();
 	}
 

@@ -285,6 +285,7 @@ public class PartyAgent extends Agent {
 
 		@Override
 		public boolean done() {
+
 			return (hambre==0 && sed==0);
 		}
 
