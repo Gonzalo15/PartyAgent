@@ -16,47 +16,42 @@ import java.util.Random;
 public class Camarero extends Agent {
 
 	protected void setup() {
+		
 		registerCamarero(getLocalName());
 
 		Random rnd = new Random();
 		ACLMessage msg = this.receive();
-		System.out.println("Agente " + getLocalName() + ": esperando un mensaje REQUEST...");
+		System.out.println("[setup] Agente " + getLocalName() + " : esperando la llamada de trabajo");
 		ACLMessage mensaje = blockingReceive(MessageTemplate.MatchPerformative(ACLMessage.REQUEST));
-		System.out.println("Agente " + getLocalName() + ": he recibido mensaje REQUEST.");
-		System.out.println("Agente " + getLocalName() + ": es hora de trabajar");
+		System.out.println("[setup]Agente " + getLocalName() + " : es hora de trabajar");
 		ACLMessage reply = new ACLMessage(ACLMessage.INFORM);
 		reply.setContent("a sus ordenes");
-		System.out.println("Agente "+getLocalName()+" : "+reply.getContent());
+		System.out.println("[setup] Agente "+getLocalName()+" : "+reply.getContent());
 		send(reply);
 
 		addBehaviour(new TickerBehaviour(this, 3000) {
 			@Override
 			protected void onTick() {
-				//System.out.println("[tickerbehaviour] " + getLocalName());
 				DFAgentDescription template = new DFAgentDescription();
 				ServiceDescription sd = new ServiceDescription();
 				sd.setType("Guest");
 				template.addServices(sd);
-//				DFAgentDescription[] listacomida;
-//				DFAgentDescription[] listabebida;
+
 				DFAgentDescription[] lista;
 				AID aux;
 
 				try {
-					// FOR PARA METER TODOS LOS INVITADOS
-//					listacomida = DFService.search(myAgent, template);
-//					listabebida = DFService.search(myAgent, template);
+
 					lista = DFService.search(myAgent, template);
 
 					if(ListaInvitados.numInvitados()==0/*listacomida.length==0 && listabebida.length==0*/){
 						System.out.println("[Tickerbehaviour] " + getLocalName()+": Se acabo la fiesta, hora de dormir");
 						//ELIMINAR EL COMPORTAMIENTO
 						myAgent.removeBehaviour(this);
+						myAgent.doDelete();
 					}
 					else{
 						Random random = new Random();
-//						int invitadocomida = (int) (random.nextDouble()* listacomida.length);
-//						int invitadobebida = (int) (random.nextDouble()* listabebida.length);
 						int invitado = (int) (random.nextDouble()* lista.length);
 						
 						String[] content={"comer","beber"};
@@ -66,9 +61,6 @@ public class Camarero extends Agent {
 						msg.setSender(myAgent.getAID());
 						
 						msg.addReceiver(lista[invitado].getName());
-						
-						//FALTA DEFINIR COMO PONER EL CONTENIDO DEL MENSAJE
-						
 						
 						msg.setContent("Le apetece "+ content[eleccion]+" algo?");
 						String conver= content[eleccion] + lista[invitado].getName();
@@ -121,8 +113,7 @@ public class Camarero extends Agent {
 
 	@Override
 	protected void takeDown() {
-		System.out.println(getLocalName() + " se marcha de la fiesta");
-		this.doDelete();
+		System.out.println("[takeDown] "+getLocalName() + " se marcha de la fiesta");
 	}
 
 }
