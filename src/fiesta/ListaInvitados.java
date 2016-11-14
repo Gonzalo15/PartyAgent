@@ -1,7 +1,6 @@
 package fiesta;
 import jade.core.AID;
 import jade.util.leap.ArrayList;
-import jade.util.leap.List;
 
 public class ListaInvitados{
 

@@ -1,23 +1,17 @@
 package fiesta;
-import java.security.acl.Acl;
-import java.util.Random;
-
 import jade.core.AID;
 import jade.core.Agent;
-import jade.core.behaviours.Behaviour;
-import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.OneShotBehaviour;
-import jade.core.behaviours.ParallelBehaviour;
-import jade.core.behaviours.SequentialBehaviour;
 import jade.core.behaviours.SimpleBehaviour;
 import jade.core.behaviours.WakerBehaviour;
 import jade.domain.DFService;
-import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
-import jade.gui.DFAgentDscDlg;
+import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
+
+import java.util.Random;
 
 @SuppressWarnings("serial")
 public class PartyAgent extends Agent {
@@ -309,7 +303,7 @@ public class PartyAgent extends Agent {
 			
 			
 			if(hambre>0){
-				System.out.println(getLocalName()+": Me comería "+ hambre +" canapes");
+				System.out.println(getLocalName()+": Me comerï¿½a "+ hambre +" canapes");
 			ACLMessage reply = msg.createReply();
 			reply.setPerformative(ACLMessage.ACCEPT_PROPOSAL);
 			reply.setContent("Si por favor");
