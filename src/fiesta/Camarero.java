@@ -48,15 +48,21 @@ public class Camarero extends Agent {
 					else{
 						Random random = new Random();
 						int invitado = (int) (random.nextDouble()* lista.length);
+						int eleccion = (int) (random.nextDouble()*2);
+						System.out.println("eleccion:"+eleccion);
+						
 						ACLMessage msg = new ACLMessage(ACLMessage.PROPOSE);
 						msg.setSender(myAgent.getAID());
 						msg.addReceiver(lista[invitado].getName());
+						
 						//FALTA DEFINIR COMO PONER EL CONTENIDO DEL MENSAJE
-						String content="comer";
-						msg.setContent("Le apetece comer algo?");
-						String conver= content + lista[invitado].getName();
+						
+						String[] content={"comer","beber"};
+						
+						msg.setContent("Le apetece "+ content[eleccion]+" algo?");
+						String conver= content[eleccion] + lista[invitado].getName();
 						msg.setConversationId(conver);
-						System.out.println("[Tickerbehaviour] " + getLocalName()+" Le apetece "+ content+ " algo?");
+						System.out.println("[Tickerbehaviour] " + getLocalName()+" Le apetece "+ content[eleccion]+ " algo?");
 						myAgent.send(msg);
 						MessageTemplate mt = MessageTemplate.MatchConversationId(conver);
 
@@ -66,6 +72,13 @@ public class Camarero extends Agent {
 							ACLMessage reply = msg2.createReply();
 							reply.setPerformative(ACLMessage.CONFIRM);
 							System.out.println(getLocalName() + " [ServeItemBehaviour] : Aqui tienes "
+									+ msg2.getSender().getLocalName());
+							myAgent.send(reply);
+						}
+						else if(msg2 != null && msg2.getPerformative() == ACLMessage.REJECT_PROPOSAL){
+							ACLMessage reply = msg2.createReply();
+							reply.setPerformative(ACLMessage.CONFIRM);
+							System.out.println(getLocalName() + " [ServeItemBehaviour] : No hay de que "
 									+ msg2.getSender().getLocalName());
 							myAgent.send(reply);
 						}

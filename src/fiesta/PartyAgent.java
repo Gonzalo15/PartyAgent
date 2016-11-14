@@ -34,8 +34,7 @@ public class PartyAgent extends Agent {
 
     	
     	Random rnd = new Random();
-    	hambre = (int) (rnd.nextDouble()* 10);
-    	sed = (int) (rnd.nextDouble()*10);
+    	
     	
     	if(this.getAID().toString().contains("Host")){
     		
@@ -45,7 +44,7 @@ public class PartyAgent extends Agent {
     		System.out.println("Host esta aqui");
     	}
     	else{
-    		
+
     		registerAgent("Guest");
     		int wakeTime = (int) (rnd.nextDouble()* 10 + 1); //Random de 1 a 100 ( el 99 es el numero de elementeos y el 1 el primer numero
     		System.out.println(wakeTime);
@@ -55,19 +54,16 @@ public class PartyAgent extends Agent {
     			protected void onWake() {
     				registerList();
     				System.out.println(myAgent.getLocalName() + "[WakerBehaviour] : He llegado a la fiesta");
+    				hambre = (int) (rnd.nextDouble()* 10+1);
+    	        	sed = (int) (rnd.nextDouble()*10+1);
+    	        	System.out.println("el hambre de"+getLocalName()+" es:"+hambre);
     				//System.out.println(myAgent);
     				addBehaviour(new SaludarBehaviour());
     				addBehaviour(new BienvenidaBehaviour());
     				
     				System.out.println("Agente "+getLocalName()+": esperando a que de coomienzo la fiesta...");
     	    		
-    	    		MessageTemplate mt = MessageTemplate.and(MessageTemplate.MatchContent("Disfrutad de la fiesta!"),
-    	    							 MessageTemplate.MatchSender(partyHost));
-    	    		//MessageTemplate mt = MessageTemplate.MatchContent("Disfrutad de la fiesta!");
-    	    		//System.out.println(mt);
-    	    		ACLMessage mensaje = blockingReceive(mt);
-    	    		addBehaviour(new Comer());
-    	    		addBehaviour(new Beber());
+    				addBehaviour(new accionBehaviour());
     				
     			}
     		});
@@ -116,7 +112,22 @@ public class PartyAgent extends Agent {
 		}
     }
 
-	
+	private class accionBehaviour extends OneShotBehaviour{
+
+		@Override
+		public void action() {
+			MessageTemplate mt = MessageTemplate.and(MessageTemplate.MatchContent("Disfrutad de la fiesta!"),
+					 MessageTemplate.MatchSender(partyHost));
+
+			ACLMessage mensaje = blockingReceive(mt);
+			
+			addBehaviour(new alimentarse());
+
+
+			
+		}
+
+	}
 	
 	
     //HACER UNO QUE HAGA QUE TODOS ESCUCHEN AL ANFITRION CUANDO LA SALA ESTE LLENA
@@ -167,6 +178,7 @@ public class PartyAgent extends Agent {
 	          		msgG.setContent("Disfrutad de la fiesta!");
 	          		send(msgC);
 	          		send(msgG);
+	          		System.out.println("[llenaBehaviour] Host: Camareros!!!");
 	          		comienzo=true;
 	          	}
 	        }
@@ -196,12 +208,12 @@ public class PartyAgent extends Agent {
 
             DFAgentDescription template = new DFAgentDescription();
             ServiceDescription sd = new ServiceDescription();
-            sd.setType("Anfitrion");
+            sd.setType("Host");
             template.addServices(sd);
 
             DFAgentDescription template2 = new DFAgentDescription();
             ServiceDescription sd2 = new ServiceDescription();
-            sd2.setType("Invitado");
+            sd2.setType("Guest");
             template2.addServices(sd2);
 
             try {
@@ -231,7 +243,7 @@ public class PartyAgent extends Agent {
         public void action() {
 
             MessageTemplate mt = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.INFORM),
-                    								MessageTemplate.MatchContent("hello"));
+                    								MessageTemplate.MatchContent("Hola"));
             ACLMessage msg = myAgent.receive(mt);
            
             if (msg != null && !msg.getSender().equals(myAgent.getAID())) {
@@ -248,58 +260,93 @@ public class PartyAgent extends Agent {
             return false;
         }
     }
-    
-    private class Comer extends Behaviour{
-    	MessageTemplate mt = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.REQUEST),
-							 MessageTemplate.MatchContent("Le apetece comer algo?"));
-    						
-    	private boolean lleno=false;
+    private class alimentarse extends SimpleBehaviour{
+    		MessageTemplate mc = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.PROPOSE),
+					 			 MessageTemplate.MatchContent("Le apetece comer algo?"));
+			MessageTemplate mb = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.PROPOSE),
+		 			 MessageTemplate.MatchContent("Le apetece beber algo?"));
 		@Override
 		public void action() {
-			
-			while (hambre>0){
-				ACLMessage msg= myAgent.receive(mt);
-				ACLMessage reply = msg.createReply();
-				reply.setPerformative(ACLMessage.ACCEPT_PROPOSAL);
-				reply.setContent("Si por favor");
-				myAgent.send(reply);
-				
-				hambre--;
+			MessageTemplate tp = MessageTemplate.MatchPerformative(ACLMessage.PROPOSE);
+			ACLMessage msg= blockingReceive(tp);
+			if(tp.MatchContent(mc.get)){
+				addBehaviour(new Comer(msg));
 			}
-			lleno=true;
-			
+			else if(tp==mb){
+				addBehaviour(new Beber(msg));
+			}			
 		}
 
 		@Override
 		public boolean done() {
-			return lleno;
+			// TODO Auto-generated method stub
+			return (hambre==0 && sed==0);
+		}
+
+
+    }
+    private class Comer extends OneShotBehaviour{
+    	   						
+    	ACLMessage msg;
+    	private boolean lleno=false;
+		
+    	public Comer(ACLMessage msg) {
+			this.msg=msg;
+		}
+
+		@Override
+		public void action() {
+			
+			
+			if(hambre>0){
+				System.out.println(getLocalName()+": Me comería "+ hambre +" canapes");
+			ACLMessage reply = msg.createReply();
+			reply.setPerformative(ACLMessage.ACCEPT_PROPOSAL);
+			reply.setContent("Si por favor");
+			myAgent.send(reply);
+				
+			hambre--;
+			}
+			else{
+				ACLMessage reply = msg.createReply();
+				reply.setPerformative(ACLMessage.REJECT_PROPOSAL);
+				reply.setContent("No, gracias");
+				myAgent.send(reply);
+			}
+			
+			
 		}
     }
     
-    private class Beber extends Behaviour{
-    	MessageTemplate mt = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.REQUEST),
-				 			 MessageTemplate.MatchContent("Le apetece beber algo?"));
-				
-    	private boolean saciado=false;
+    private class Beber extends OneShotBehaviour{
+			
+		ACLMessage msg;
+		private boolean lleno = false;
+
+		public Beber(ACLMessage msg) {
+			this.msg=msg;
+		}
+
 		@Override
 		public void action() {
-			while (sed>0){
-				ACLMessage msg= myAgent.receive(mt);
+
+			if (sed > 0) {
+				System.out.println(getLocalName() + ": Me comería " + sed + " canapes");
 				ACLMessage reply = msg.createReply();
 				reply.setPerformative(ACLMessage.ACCEPT_PROPOSAL);
 				reply.setContent("Si por favor");
 				myAgent.send(reply);
-				
-				sed--;
-			}
-			saciado=true;
-			
-		}
 
-		@Override
-		public boolean done() {
-			return saciado;
-		}
+				sed--;
+			} else {
+				ACLMessage reply = msg.createReply();
+				reply.setPerformative(ACLMessage.REJECT_PROPOSAL);
+				reply.setContent("No, gracias");
+				myAgent.send(reply);
+			}
+
+
+}
     	
     }
     
