@@ -56,7 +56,7 @@ public class PartyAgent extends Agent {
     	        	System.out.println("[Control de usuario] El hambre de "+getLocalName()+" es: "+hambre);
     				addBehaviour(new SaludarBehaviour());
     				addBehaviour(new BienvenidaBehaviour());
-    				System.out.println("[WakerBehaviour] "+getLocalName()+": esperando a que de coomienzo la fiesta...");
+    				System.out.println("[WakerBehaviour] "+getLocalName()+": esperando a que de comienzo la fiesta...");
     				addBehaviour(new accionBehaviour());
     			}
     			
