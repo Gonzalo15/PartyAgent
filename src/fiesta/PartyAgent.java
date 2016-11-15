@@ -99,11 +99,11 @@ public class PartyAgent extends Agent {
     protected void takeDown() {
 		Random rnd = new Random();
 		if(rnd.nextInt(100)>98){
-	        System.out.println(getLocalName()+" se muere de indigestion");
+	        System.out.println("[takeDown] "+getLocalName()+" se muere de indigestion");
 	        ListaInvitados.borrar(getAID());
 
 		}else{
-			System.out.println(getLocalName()+" se marcho de la fiesta");
+			System.out.println("[takeDown] "+getLocalName()+" se marcho de la fiesta");
 			ListaInvitados.borrar(getAID());
 
 		}

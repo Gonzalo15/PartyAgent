@@ -1,5 +1,4 @@
 package fiesta;
-import jade.content.onto.basic.Done;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.TickerBehaviour;
