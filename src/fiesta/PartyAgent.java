@@ -299,7 +299,7 @@ public class PartyAgent extends Agent {
 					msg.setContent("Adios");
 					msg.addReceiver(partyHost);
 					send(msg);
-					System.out.println("[onEnd] "+ getLocalName()+": adios Host");
+					System.out.println("[onEnd] "+ getLocalName()+": Adios Host");
 					
 					MessageTemplate mt = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.INFORM),
 										 MessageTemplate.MatchContent("Adios"));
@@ -329,6 +329,7 @@ public class PartyAgent extends Agent {
 				ACLMessage reply = msg.createReply();
 				reply.setPerformative(ACLMessage.ACCEPT_PROPOSAL);
 				reply.setContent("Si por favor");
+				System.out.println("[OneShotBehaviour]"+getLocalName()+": Si, por favor");
 				myAgent.send(reply);
 				
 				hambre--;
@@ -361,6 +362,7 @@ public class PartyAgent extends Agent {
 				ACLMessage reply = msg.createReply();
 				reply.setPerformative(ACLMessage.ACCEPT_PROPOSAL);
 				reply.setContent("Si por favor");
+				System.out.println("[OneShotBehaviour]"+getLocalName()+": Si, por favor");
 				myAgent.send(reply);
 
 				sed--;
