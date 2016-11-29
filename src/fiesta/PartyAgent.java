@@ -123,10 +123,7 @@ public class PartyAgent extends Agent {
 		}
 
 	}
-	
-	
-    //HACER UNO QUE HAGA QUE TODOS ESCUCHEN AL ANFITRION CUANDO LA SALA ESTE LLENA
-    //UN BEHAVIOUR PARA DEJAR LA FIESTA
+
 
 	private class LlenaBehaviour extends SimpleBehaviour{
 
